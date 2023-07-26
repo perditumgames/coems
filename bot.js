@@ -248,7 +248,7 @@ client.on('interactionCreate', async (interaction) => {
       .addField('Bot Codename', 'Shorts Wars')
       .addField('Creator Name', 'Andrea Toska')
       .addField('Creator Discord Tag', '<@507605578600808449>')
-      .setFooter('Made by <@507605578600808449>. Say hi when you can!')
+      .setFooter('Made by @ssdrive. Say hi when you can!')
       .setColor('#00ff00') // Set your desired color for the embed
 
     interaction.reply({ embeds: [embed], ephemeral: false });
