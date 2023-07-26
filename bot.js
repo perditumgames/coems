@@ -268,5 +268,6 @@ function registerSlashCommands() {
   }).catch(console.error);
 }
 
-client.login(`${process.env.TOKEN}`);
+require('dotenv').config();
+client.login(process.env.TOKEN);
 
