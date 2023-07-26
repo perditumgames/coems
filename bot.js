@@ -252,6 +252,38 @@ client.on('interactionCreate', async (interaction) => {
       .setColor('#00ff00') // Set your desired color for the embed
 
     interaction.reply({ embeds: [embed], ephemeral: false });
+    const option = options.getString('option');
+    const value = options.getString('value');
+
+    // Check if the user invoking the command has the necessary permissions
+    if (!interaction.member.permissions.has('ADMINISTRATOR')) {
+      return interaction.reply({ content: 'You do not have permission to use this command.', ephemeral: true });
+    }
+
+    // Get the server-specific configurations
+    const config = JSON.parse(fs.readFileSync('config.json', 'utf8'));
+
+    if (option === 'suggestionchannelid') {
+      // Set the suggestion channel ID for the server
+      config[interaction.guildId] = config[interaction.guildId] || {};
+      config[interaction.guildId].suggestionChannelId = value;
+
+      // Save the updated configurations to the file
+      fs.writeFileSync('config.json', JSON.stringify(config));
+
+      interaction.reply({ content: `Suggestion channel ID set to: ${value}`, ephemeral: true });
+    } else if (option === 'getsuggestionchannelid') {
+      // Set the announce channel ID for the server
+      config[interaction.guildId] = config[interaction.guildId] || {};
+      config[interaction.guildId].getsuggestionchannelid = value;
+
+      // Save the updated configurations to the file
+      fs.writeFileSync('config.json', JSON.stringify(config));
+
+      interaction.reply({ content: `getsuggestionchannelid set to: ${value}`, ephemeral: true });
+    } else {
+      interaction.reply({ content: 'Invalid option.', ephemeral: true });
+    }
   }
 });
 
