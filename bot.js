@@ -117,7 +117,7 @@ async function handleQRCode(text) {
 
 client.on('messageCreate', async (message) => {
   if (message.author.bot) return;
-  
+
   if (message.attachments.size > 0) {
     const url = message.attachments.first().url;
     try {
@@ -268,5 +268,5 @@ function registerSlashCommands() {
   }).catch(console.error);
 }
 
-client.login('MTEzMzQ3NTA5MDU4ODI1MDMwMg.GzzKUd.bfxZAXFBWrW3926JDsz-hy33rZM44UFzvdZtAs');
+client.login('');
 
