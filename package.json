@@ -9,14 +9,15 @@
     "qrcode-reader": "^1.0.4"
   },
   "name": "swiftdecoder",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "quick decoder for discord",
   "main": "bot.js",
   "devDependencies": {
     "nodemon": "^3.0.1"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node .",
+    "test": "nodemon start"
   },
   "author": "Natsuki",
   "license": "SEE LICENSE IN YOURMOM"

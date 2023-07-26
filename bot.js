@@ -1,9 +1,13 @@
 const { Client, GatewayIntentBits } = require('discord.js');
+const { MessageAttachment, MessageEmbed } = require('discord.js');
+const Discord = require('discord.js');
 const https = require('https');
 const QRReader = require('qrcode-reader');
 const Jimp = require('jimp');
 const { base64encode, base64decode } = require('nodejs-base64');
 const { google } = require('googleapis');
+const QRCode = require('qrcode');
+const fs = require('fs');
 
 // Define the intents your bot will use as an array of strings
 const intents = ['GUILDS', 'GUILD_MESSAGES'];
@@ -23,6 +27,18 @@ client.once('ready', () => {
   console.log('Bot is online!');
   registerSlashCommands();
 });
+
+async function generateQRCode(text) {
+  return new Promise((resolve, reject) => {
+    QRCode.toBuffer(text, { type: 'png' }, (err, buffer) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(buffer);
+      }
+    });
+  });
+}
 
 client.on('interactionCreate', async (interaction) => {
   if (!interaction.isCommand()) return;
@@ -51,7 +67,7 @@ client.on('interactionCreate', async (interaction) => {
         console.error(`Error deciphering with offset ${offset}:`, err);
       }
     }
-
+    
     interaction.reply({ content: decipheredTexts.join('\n'), ephemeral: false });
   } else if (commandName === 'decode') {
     const text = options.getString('text');
@@ -65,10 +81,43 @@ client.on('interactionCreate', async (interaction) => {
       console.error('Error decoding Base64:', err);
       interaction.reply({ content: 'An error occurred while decoding the Base64 text.', ephemeral: true });
     }
+  } else if (commandName === 'qrencode') {
+    const text = options.getString('text');
+    if (!text) {
+      return interaction.reply({ content: 'Please provide text to generate a QR code.', ephemeral: true });
+    }
+  
+    // Generate QR code image
+    try {
+      const qrCodeImageBuffer = await generateQRCode(text);
+      const qrCodeAttachment = new MessageAttachment(qrCodeImageBuffer, 'qrcode.png');
+  
+      const embed = new MessageEmbed()
+        .setTitle('QR Code')
+        .setDescription(`QR code for: ${text}`)
+        .setImage('attachment://qrcode.png');
+  
+      interaction.reply({ embeds: [embed], files: [qrCodeAttachment], ephemeral: false });
+    } catch (err) {
+      console.error('Error generating QR code:', err);
+      interaction.reply({ content: 'An error occurred while generating the QR code.', ephemeral: true });
+    }
   }
 });
 
+async function handleQRCode(text) {
+  try {
+    const qrCodeImage = await generateQRCodeImage(text);
+    return qrCodeImage;
+  } catch (err) {
+    console.error('Error generating QR code:', err);
+    throw err;
+  }
+}
+
 client.on('messageCreate', async (message) => {
+  if (message.author.bot) return;
+  
   if (message.attachments.size > 0) {
     const url = message.attachments.first().url;
     try {
@@ -195,6 +244,18 @@ function registerSlashCommands() {
         {
           name: 'text',
           description: 'The Base64-encoded text to decode.',
+          type: 'STRING',
+          required: true,
+        },
+      ],
+    },
+    {
+      name: 'qrencode',
+      description: 'Generate a QR code for the given text.',
+      options: [
+        {
+          name: 'text',
+          description: 'The text to encode in the QR code.',
           type: 'STRING',
           required: true,
         },
