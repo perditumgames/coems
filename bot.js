@@ -242,12 +242,13 @@ client.on('interactionCreate', async (interaction) => {
     });
   } else if (commandName === 'about') {
     const embed = new MessageEmbed()
-      .setTitle('Swift Decoder - Shorts Wars')
+      .setTitle('Swift Decoder - Shorts Wars Era')
       .setDescription('Swift Decoder is a Discord bot that quickly decodes QR codes, performs Caesar cipher decryption, and handles Base64 encoding/decoding. Use the /encode and /decode command for Base64! Post images for automatic QR code scanning! Swift, efficient, and perfect for your server!')
       .addField('Bot Name', 'Swift Decoder')
       .addField('Bot Codename', 'Shorts Wars')
       .addField('Creator Name', 'Andrea Toska')
       .addField('Creator Discord Tag', '<@507605578600808449>')
+      .setFooter('Made by <@507605578600808449>. Say hi when you can!')
       .setColor('#00ff00') // Set your desired color for the embed
 
     interaction.reply({ embeds: [embed], ephemeral: false });
