@@ -62,7 +62,7 @@ client.on('interactionCreate', async (interaction) => {
 
   const { commandName, options } = interaction;
 
-  if (commandName === 'encode') {
+  if (commandName === 'encodeb64') {
     const text = options.getString('text');
     if (!text) {
       return interaction.reply({ content: 'Please provide text to encode.', ephemeral: true });
@@ -86,7 +86,7 @@ client.on('interactionCreate', async (interaction) => {
     }
     
     interaction.reply({ content: decipheredTexts.join('\n'), ephemeral: false });
-  } else if (commandName === 'decode') {
+  } else if (commandName === 'decodeb64') {
     const text = options.getString('text');
     if (!text) {
       return interaction.reply({ content: 'Please provide text to decode.', ephemeral: true });
@@ -243,7 +243,7 @@ client.on('interactionCreate', async (interaction) => {
   } else if (commandName === 'about') {
     const embed = new MessageEmbed()
       .setTitle('Swift Decoder - Shorts Wars Era')
-      .setDescription('Swift Decoder is a Discord bot that quickly decodes QR codes, performs Caesar cipher decryption, and handles Base64 encoding/decoding. Use the /encode and /decode command for Base64! Post images for automatic QR code scanning! Swift, efficient, and perfect for your server!')
+      .setDescription('Swift Decoder is a Discord bot that quickly decodes QR codes, performs Caesar cipher decryption, and handles Base64 encoding/decoding. Use the /encodeb64 and /decodeb64 command for Base64! Post images for automatic QR code scanning! Swift, efficient, and perfect for your server!')
       .addField('Bot Name', 'Swift Decoder')
       .addField('Bot Codename', 'Shorts Wars')
       .addField('Creator Name', 'Andrea Toska')
@@ -303,7 +303,7 @@ client.on('messageCreate', async (message) => {
     }
 
     message.channel.send(decipheredTexts.join('\n'));
-  } else if (command === 'decode') {
+  } else if (command === 'decodeb64') {
     const text = args.join(' ');
     try {
       const decodedText = base64decode(text);
@@ -364,7 +364,7 @@ function caesarDecipher(text, offset) {
 function registerSlashCommands() {
   const commands = [
     {
-      name: 'encode',
+      name: 'encodeb64',
       description: 'Encode text to base64.',
       options: [
         {
@@ -388,7 +388,7 @@ function registerSlashCommands() {
       ],
     },
     {
-      name: 'decode',
+      name: 'decodeb64',
       description: 'Decode Base64 text.',
       options: [
         {
