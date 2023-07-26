@@ -268,5 +268,5 @@ function registerSlashCommands() {
   }).catch(console.error);
 }
 
-client.login('');
+client.login(`${process.env.TOKEN}`);
 
