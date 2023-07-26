@@ -1,0 +1,23 @@
+{
+  "dependencies": {
+    "discord.js": "^13.16.0",
+    "googleapis": "^122.0.0",
+    "https": "^1.0.0",
+    "jimp": "^0.22.8",
+    "nodejs-base64": "^2.0.0",
+    "qrcode": "^1.5.3",
+    "qrcode-reader": "^1.0.4"
+  },
+  "name": "swiftdecoder",
+  "version": "1.0.0",
+  "description": "quick decoder for discord",
+  "main": "bot.js",
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Natsuki",
+  "license": "SEE LICENSE IN YOURMOM"
+}
