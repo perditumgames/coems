@@ -10,7 +10,7 @@ const QRCode = require('qrcode');
 const fs = require('fs');
 
 // Define the intents your bot will use as an array of strings
-const intents = ['GUILDS', 'GUILD_MESSAGES'];
+const intents = ['GUILD_MESSAGES'];
 
 const client = new Client({ intents });
 const prefix = 'sw!';
