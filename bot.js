@@ -9,11 +9,20 @@ const { google } = require('googleapis');
 const QRCode = require('qrcode');
 const fs = require('fs');
 
+// Load bans data from bans.json
+let bans = JSON.parse(fs.readFileSync('bans.json', 'utf8'));
+
+// Initialize nextId with 1 if it is null
+if (bans.nextId === null) {
+  bans.nextId = 1;
+}
+
 // Define the intents your bot will use as an array of strings
-const intents = ['GUILD_MESSAGES'];
+const intents = ['GUILDS', 'GUILD_MESSAGES'];
 
 const client = new Client({ intents });
 const prefix = 'sw!';
+const banID = 1;
 
 // YouTube Data API credentials (replace with your own)
 const youtubeApiKey = 'AIzaSyDoVZX9iEApOgDVG-JXAxjaZbSNLYCzZpo';
@@ -27,6 +36,14 @@ client.once('ready', () => {
   console.log('Bot is online!');
   registerSlashCommands();
 });
+
+function saveBanReason(banId, reason) {
+  fs.appendFile('ban_reasons.txt', `Ban ID: ${banId}, Reason: ${reason}\n`, (err) => {
+    if (err) {
+      console.error('Error saving ban reason:', err);
+    }
+  });
+}
 
 async function generateQRCode(text) {
   return new Promise((resolve, reject) => {
@@ -102,8 +119,129 @@ client.on('interactionCreate', async (interaction) => {
       console.error('Error generating QR code:', err);
       interaction.reply({ content: 'An error occurred while generating the QR code.', ephemeral: true });
     }
+  } else if (commandName === 'ban') {
+    const user = options.getUser('user');
+    const reason = options.getString('reason');
+
+    if (user) {
+      if (!interaction.member.permissions.has('BAN_MEMBERS')) {
+        return interaction.reply({ content: 'You do not have permission to use this command.', ephemeral: true });
+      }
+
+  // Ban the user
+  try {
+    // Generate a new ban ID using nextId and update nextId for the next ban
+    const banId = bans.nextId++;
+    console.log(`Ban ID generated: ${banId}`);
+    
+    const reason = options.getString('reason') || 'Breaking server rules'; // Get the provided reason or use 'No reason provided' as default
+
+    bans[banId] = {
+      user: user.id,
+      reason: reason,
+    };
+    console.log(`New ban entry added with ID ${banId}`);
+    
+    fs.writeFileSync('bans.json', JSON.stringify(bans, null, 2)); // Save the updated bans data to bans.json
+    console.log('Bans data saved to bans.json');
+
+    await interaction.guild.members.ban(user, { reason: `Ban ID: ${banId} - ${reason}` });
+    console.log(`Successfully banned ${user.tag} with ID ${banId}.`);
+    
+    interaction.reply({ content: `Successfully banned ${user.tag}. Reason: ${reason}`, ephemeral: false });
+  } catch (error) {
+    console.error('Error banning user:', error);
+    interaction.reply({ content: 'An error occurred while banning the user.', ephemeral: true });
   }
-});
+    } else {
+      interaction.reply({ content: 'Please provide a valid member to ban.', ephemeral: true });
+    }
+  } else if (commandName === 'kick') {
+    const user = options.getUser('user');
+    const reason = options.getString('reason'); // Get the reason parameter from the interaction
+
+    if (user) {
+      // Check if the user invoking the command has the necessary permissions to kick members
+      if (!interaction.member.permissions.has('KICK_MEMBERS')) {
+        return interaction.reply({ content: 'You do not have permission to use this command.', ephemeral: true });
+      }
+
+      try {
+        // Kick the user with the provided reason
+        await interaction.guild.members.kick(user, { reason: reason });
+
+        const kicks = JSON.parse(fs.readFileSync('kicks.json', 'utf8'));
+        const kickId = kicks.nextId++;
+        kicks[kickId] = { user: user.id, reason: reason || 'No reason provided' };
+        fs.writeFileSync('kicks.json', JSON.stringify(kicks));
+
+        interaction.reply({ content: `Successfully kicked ${user.tag}.\nReason: ${reason || 'No reason provided'}`, ephemeral: false });
+      } catch (error) {
+        console.error('Error kicking user:', error);
+        interaction.reply({ content: 'An error occurred while kicking the user.', ephemeral: true });
+      }
+    } else {
+      interaction.reply({ content: 'Please provide a valid member to kick.', ephemeral: true });
+    }
+  } else if (commandName === 'lookup') {
+    // Command to lookup reasons for a specific ban ID
+    const banId = options.getInteger('banid');
+    if (!banId) {
+      return interaction.reply({ content: 'Please provide a valid ban ID to lookup.', ephemeral: true });
+    }
+
+    fs.readFile('ban_reasons.txt', 'utf8', (err, data) => {
+      if (err) {
+        console.error('Error reading ban reasons file:', err);
+        return interaction.reply({ content: 'An error occurred while looking up the ban reason.', ephemeral: true });
+      }
+
+      const lines = data.split('\n');
+      const result = lines.find((line) => line.includes(`Ban ID: ${banId}`));
+
+      if (result) {
+        interaction.reply({ content: `Ban ID ${banId} Reason: ${result.split('Reason:')[1]}`, ephemeral: false });
+      } else {
+        interaction.reply({ content: 'Ban ID not found or reason not available.', ephemeral: false });
+      }
+    });
+  } else if (commandName === 'reason') {
+    // Command to add a reason to a specific ban ID
+    const banId = options.getInteger('banid');
+    const reason = options.getString('reason');
+
+    if (!banId || !reason) {
+      return interaction.reply({ content: 'Please provide a valid ban ID and reason to add.', ephemeral: true });
+    }
+
+    fs.readFile('ban_reasons.txt', 'utf8', (err, data) => {
+      if (err) {
+        console.error('Error reading ban reasons file:', err);
+        return interaction.reply({ content: 'An error occurred while adding the ban reason.', ephemeral: true });
+      }
+
+      const lines = data.split('\n');
+      const resultIndex = lines.findIndex((line) => line.includes(`Ban ID: ${banId}`));
+
+      if (resultIndex !== -1) {
+        // Replace the existing reason
+        lines[resultIndex] = `Ban ID: ${banId}, Reason: ${reason}`;
+      } else {
+        // Add a new reason
+        lines.push(`Ban ID: ${banId}, Reason: ${reason}`);
+      }
+
+      // Update the text file with the new data
+      fs.writeFile('ban_reasons.txt', lines.join('\n'), 'utf8', (err) => {
+        if (err) {
+          console.error('Error saving ban reasons:', err);
+          return interaction.reply({ content: 'An error occurred while saving the ban reason.', ephemeral: true });
+        }
+        interaction.reply({ content: `Ban ID ${banId} Reason updated: ${reason}`, ephemeral: true });
+      });
+    });
+  }
+  });
 
 async function handleQRCode(text) {
   try {
@@ -256,6 +394,72 @@ function registerSlashCommands() {
         {
           name: 'text',
           description: 'The text to encode in the QR code.',
+          type: 'STRING',
+          required: true,
+        },
+      ],
+    },
+    {
+      name: 'ban',
+      description: 'Ban a member from the server.',
+      options: [
+        {
+          name: 'user',
+          description: 'The user to ban.',
+          type: 'USER',
+          required: true,
+        },
+        {
+          name: 'reason',
+          description: 'The reason for the ban.',
+          type: 'STRING',
+          required: false, // Reason is now optional
+        },
+      ],
+    },
+    {
+      name: 'kick',
+      description: 'Kick a member from the server.',
+      options: [
+        {
+          name: 'user',
+          description: 'The user to kick.',
+          type: 'USER',
+          required: true,
+        },
+        {
+          name: 'reason',
+          description: 'The reason for the kick.',
+          type: 'STRING',
+          required: false, // Reason is now optional
+        },
+      ],
+    },
+    {
+      name: 'lookup',
+      description: 'Lookup the reason for a ban by ID.',
+      options: [
+        {
+          name: 'banid',
+          description: 'The ID of the ban to lookup.',
+          type: 'INTEGER',
+          required: true,
+        },
+      ],
+    },
+    {
+      name: 'reason',
+      description: 'Add or update a reason for a ban by ID.',
+      options: [
+        {
+          name: 'banid',
+          description: 'The ID of the ban to add/update reason.',
+          type: 'INTEGER',
+          required: true,
+        },
+        {
+          name: 'reason',
+          description: 'The reason for the ban.',
           type: 'STRING',
           required: true,
         },
