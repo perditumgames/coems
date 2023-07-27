@@ -1,14 +1,23 @@
 {
   "dependencies": {
+    "@discordjs/opus": "^0.9.0",
+    "@discordjs/voice": "^0.16.0",
+    "@ffmpeg-installer/ffmpeg": "^1.1.0",
+    "axios": "^1.4.0",
     "discord.js": "^13.16.0",
     "discord.js-buttons": "^1.0.0",
     "dotenv": "^16.3.1",
+    "ffmpeg-static": "^5.1.0",
+    "fluent-ffmpeg": "^2.1.2",
     "googleapis": "^122.0.0",
     "https": "^1.0.0",
     "jimp": "^0.22.8",
+    "morse-node": "^0.1.1",
+    "node-fetch": "^3.3.2",
     "nodejs-base64": "^2.0.0",
     "qrcode": "^1.5.3",
-    "qrcode-reader": "^1.0.4"
+    "qrcode-reader": "^1.0.4",
+    "wav": "^1.0.2"
   },
   "name": "swiftdecoder",
   "version": "1.0.1",

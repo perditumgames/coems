@@ -8,6 +8,12 @@ const { base64encode, base64decode } = require('nodejs-base64');
 const { google } = require('googleapis');
 const QRCode = require('qrcode');
 const fs = require('fs');
+const lame = require('node-lame');
+const wav = require('wav');
+const morse = require('morse-node').create("ITU");
+const axios = require('axios');
+const ffmpeg = require('fluent-ffmpeg');
+const ffmpegStatic = require('ffmpeg-static');
 
 // Load bans data from bans.json
 let bans = JSON.parse(fs.readFileSync('bans.json', 'utf8'));
@@ -240,49 +246,20 @@ client.on('interactionCreate', async (interaction) => {
         interaction.reply({ content: `Ban ID ${banId} Reason updated: ${reason}`, ephemeral: true });
       });
     });
-  } else if (commandName === 'about') {
-    const embed = new MessageEmbed()
-      .setTitle('Swift Decoder - Shorts Wars Era')
-      .setDescription('Swift Decoder is a Discord bot that quickly decodes QR codes, performs Caesar cipher decryption, and handles Base64 encoding/decoding. Use the /encodeb64 and /decodeb64 command for Base64! Post images for automatic QR code scanning! Swift, efficient, and perfect for your server!')
-      .addField('Bot Name', 'Swift Decoder')
-      .addField('Bot Codename', 'Shorts Wars')
-      .addField('Creator Name', 'Andrea Toska')
-      .addField('Creator Discord Tag', '<@507605578600808449>')
-      .setFooter('Made by @ssdrive. Say hi when you can!')
-      .setColor('#00ff00') // Set your desired color for the embed
-
-    interaction.reply({ embeds: [embed], ephemeral: false });
-    const option = options.getString('option');
-    const value = options.getString('value');
-
-    // Check if the user invoking the command has the necessary permissions
-    if (!interaction.member.permissions.has('ADMINISTRATOR')) {
-      return interaction.reply({ content: 'You do not have permission to use this command.', ephemeral: true });
+  } else if (commandName === 'decodemorse') {
+    const attachment = interaction.attachments.first;
+    if (!attachment || !attachment.name.endsWith('.mp3') || !attachment.name.endsWith('.wav')) {
+      await interaction.reply('Please attach an audio file (MP3 or WAV) to decode.');
+      return;
     }
 
-    // Get the server-specific configurations
-    const config = JSON.parse(fs.readFileSync('config.json', 'utf8'));
-
-    if (option === 'suggestionchannelid') {
-      // Set the suggestion channel ID for the server
-      config[interaction.guildId] = config[interaction.guildId] || {};
-      config[interaction.guildId].suggestionChannelId = value;
-
-      // Save the updated configurations to the file
-      fs.writeFileSync('config.json', JSON.stringify(config));
-
-      interaction.reply({ content: `Suggestion channel ID set to: ${value}`, ephemeral: true });
-    } else if (option === 'getsuggestionchannelid') {
-      // Set the announce channel ID for the server
-      config[interaction.guildId] = config[interaction.guildId] || {};
-      config[interaction.guildId].getsuggestionchannelid = value;
-
-      // Save the updated configurations to the file
-      fs.writeFileSync('config.json', JSON.stringify(config));
-
-      interaction.reply({ content: `getsuggestionchannelid set to: ${value}`, ephemeral: true });
-    } else {
-      interaction.reply({ content: 'Invalid option.', ephemeral: true });
+    try {
+      const audioBuffer = await fs.promises.readFile(attachment.url);
+      const decodedText = await decodeMorseFromAudio(audioBuffer);
+      await interaction.reply(`Decoded Morse Code: ${decodedText}`);
+    } catch (error) {
+      console.error('Error decoding Morse code:', error);
+      await interaction.reply('Error decoding Morse code.');
     }
   }
 });
@@ -313,36 +290,6 @@ client.on('messageCreate', async (message) => {
       }
     } catch (err) {
       // console.error('QR code decoding error:', err);
-    }
-  }
-
-  if (!message.content.startsWith(prefix) || message.author.bot) return;
-
-  const args = message.content.slice(prefix.length).trim().split(/ +/);
-  const command = args.shift().toLowerCase();
-
-  if (command === 'cdecode') {
-    const text = args.join(' ');
-
-    const decipheredTexts = [];
-    for (let offset = 1; offset <= 26; offset++) {
-      try {
-        const decipheredText = caesarDecipher(text, offset);
-        decipheredTexts.push(`Offset ${offset}: ${decipheredText}`);
-      } catch (err) {
-        console.error(`Error deciphering with offset ${offset}:`, err);
-      }
-    }
-
-    message.channel.send(decipheredTexts.join('\n'));
-  } else if (command === 'decodeb64') {
-    const text = args.join(' ');
-    try {
-      const decodedText = base64decode(text);
-      message.channel.send('Decoded text: ' + decodedText);
-    } catch (err) {
-      console.error('Error decoding Base64:', err);
-      message.channel.send('An error occurred while decoding the Base64 text.');
     }
   }
 });
