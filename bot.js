@@ -456,11 +456,6 @@ function registerSlashCommands() {
         },
       ],
     },
-    {
-      name: 'about',
-      description: 'Info about the bot.',
-      options: [],
-    },
   ];
 
   client.application.commands.set(commands).then(() => {
