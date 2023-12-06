@@ -261,8 +261,80 @@ client.on('interactionCreate', async (interaction) => {
       console.error('Error decoding Morse code:', error);
       await interaction.reply('Error decoding Morse code.');
     }
+  } else if (commandName === 'vigenere') {
+    const text = options.getString('text');
+    const key = options.getString('key');
+
+    if (!text || !key) {
+      return interaction.reply({ content: 'Please provide text and a key for Vigenère cipher.', ephemeral: true });
+    }
+
+    try {
+      const decryptedText = vigenereDecrypt(text, key);
+      interaction.reply({ content: 'Decrypted text (Vigenère): ' + decryptedText, ephemeral: true });
+    } catch (error) {
+      console.error('Error decrypting with Vigenère cipher:', error);
+      interaction.reply({ content: 'An error occurred while decrypting with Vigenère cipher.', ephemeral: true });
+    }
+  } else if (commandName === 'keyword') {
+    const text = options.getString('text');
+    const keyword = options.getString('keyword');
+
+    if (!text || !keyword) {
+      return interaction.reply({ content: 'Please provide text and a keyword for Keyword cipher.', ephemeral: true });
+    }
+
+    try {
+      const decryptedText = keywordDecrypt(text, keyword);
+      interaction.reply({ content: 'Decrypted text (Keyword): ' + decryptedText, ephemeral: true });
+    } catch (error) {
+      console.error('Error decrypting with Keyword cipher:', error);
+      interaction.reply({ content: 'An error occurred while decrypting with Keyword cipher.', ephemeral: true });
+    }
   }
 });
+
+function vigenereDecrypt(text, key) {
+  const alphabet = 'abcdefghijklmnopqrstuvwxyz';
+  let decryptedText = '';
+
+  for (let i = 0; i < text.length; i++) {
+    const char = text[i].toLowerCase();
+    const keyChar = key[i % key.length].toLowerCase();
+
+    if (alphabet.includes(char)) {
+      const charIndex = alphabet.indexOf(char);
+      const keyIndex = alphabet.indexOf(keyChar);
+      const decryptedIndex = (charIndex - keyIndex + 26) % 26;
+      decryptedText += alphabet[decryptedIndex];
+    } else {
+      decryptedText += char; // Keep non-alphabetic characters unchanged
+    }
+  }
+
+  return decryptedText;
+}
+
+function keywordDecrypt(text, keyword) {
+  const alphabet = 'abcdefghijklmnopqrstuvwxyz';
+  let decryptedText = '';
+
+  for (let i = 0; i < text.length; i++) {
+    const char = text[i].toLowerCase();
+    const keyChar = keyword[i % keyword.length].toLowerCase();
+
+    if (alphabet.includes(char)) {
+      const charIndex = alphabet.indexOf(char);
+      const keyIndex = alphabet.indexOf(keyChar);
+      const decryptedIndex = (charIndex - keyIndex + 26) % 26;
+      decryptedText += alphabet[decryptedIndex];
+    } else {
+      decryptedText += char; // Keep non-alphabetic characters unchanged
+    }
+  }
+
+  return decryptedText;
+}
 
 async function handleQRCode(text) {
   try {
