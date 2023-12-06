@@ -361,7 +361,7 @@ client.on('messageCreate', async (message) => {
         }
       }
     } catch (err) {
-      // console.error('QR code decoding error:', err);
+      console.error('QR code decoding error:', err);
     }
   }
 });

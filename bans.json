@@ -3,5 +3,73 @@
     "user": "704018386929319959",
     "reason": "Breaking server rules"
   },
-  "nextId": 2
+  "2": {
+    "user": "844034270825414717",
+    "reason": "dm advertising"
+  },
+  "3": {
+    "user": "1121927546204856386",
+    "reason": "Breaking server rules"
+  },
+  "4": {
+    "user": "978373418401542174",
+    "reason": "breaching tos: vencord"
+  },
+  "5": {
+    "user": "902826975914254386",
+    "reason": "implicate deez nuts"
+  },
+  "6": {
+    "user": "1045681736811548784",
+    "reason": "homophobia"
+  },
+  "7": {
+    "user": "1056230721263509595",
+    "reason": "Breaking server rules"
+  },
+  "8": {
+    "user": "770366425134268416",
+    "reason": "just stfu"
+  },
+  "9": {
+    "user": "714631732699070475",
+    "reason": "Breaking server rules"
+  },
+  "10": {
+    "user": "950939521929850930",
+    "reason": "alt"
+  },
+  "11": {
+    "user": "908466604331921509",
+    "reason": "Breaking server rules"
+  },
+  "12": {
+    "user": "1128616088368861225",
+    "reason": "Breaking server rules"
+  },
+  "13": {
+    "user": "931887031095791628",
+    "reason": "dm advertising"
+  },
+  "14": {
+    "user": "1140734346282676344",
+    "reason": "breaking discord tos - client mods"
+  },
+  "15": {
+    "user": "507605578600808449",
+    "reason": "memes in general"
+  },
+  "16": {
+    "user": "714631732699070475",
+    "reason": "being gay"
+  },
+  "17": {
+    "user": "808807883034198079",
+    "reason": "Breaking server rules"
+  },
+  "18": {
+    "user": "909278651655278662",
+    "reason": "self botting, using message loggers, all around just breaking discord tos and rule 3"
+  },
+  "nextId": 19
 }
