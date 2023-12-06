@@ -528,6 +528,42 @@ function registerSlashCommands() {
         },
       ],
     },
+    {
+      name: 'vigenere',
+      description: 'Decode a vignere cipher.',
+      options: [
+        {
+          name: 'text',
+          description: 'The text to decode.',
+          type: 'STRING',
+          required: true,
+        },
+        {
+          name: 'key',
+          description: 'The key to use for decryption.',
+          type: 'STRING',
+          required: true,
+        },
+      ],
+    },
+    {
+      name: 'keyword',
+      description: 'Decode a keyword cipher.',
+      options: [
+        {
+          name: 'text',
+          description: 'The text to decode.',
+          type: 'STRING',
+          required: true,
+        },
+        {
+          name: 'keyword',
+          description: 'The keyword to use for decryption.',
+          type: 'STRING',
+          required: true,
+        },
+      ],
+    },
   ];
 
   client.application.commands.set(commands).then(() => {
