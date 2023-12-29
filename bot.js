@@ -203,8 +203,6 @@ client.on('interactionCreate', async (interaction) => {
     } else {
       interaction.reply({ content: 'Ban ID not found or reason not available.', ephemeral: false });
     }
-
-    });
   } else if (commandName === 'reason') {
     // Command to add a reason to a specific ban ID
     const banId = options.getInteger('banid');
