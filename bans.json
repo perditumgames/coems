@@ -115,5 +115,9 @@
     "user": "507605578600808449",
     "reason": "testing"
   },
-  "nextId": 30
+  "30": {
+    "user": "507605578600808449",
+    "reason": "Breaking server rules"
+  },
+  "nextId": 31
 }
