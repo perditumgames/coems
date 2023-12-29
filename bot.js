@@ -196,20 +196,14 @@ client.on('interactionCreate', async (interaction) => {
       return interaction.reply({ content: 'Please provide a valid ban ID to lookup.', ephemeral: true });
     }
 
-    fs.readFile('ban_reasons.txt', 'utf8', (err, data) => {
-      if (err) {
-        console.error('Error reading ban reasons file:', err);
-        return interaction.reply({ content: 'An error occurred while looking up the ban reason.', ephemeral: true });
-      }
+    const ban = bans[banId];
 
-      const lines = data.split('\n');
-      const result = lines.find((line) => line.includes(`Ban ID: ${banId}`));
+    if (ban) {
+      interaction.reply({ content: `Ban ID ${banId} Reason: ${ban.reason}`, ephemeral: false });
+    } else {
+      interaction.reply({ content: 'Ban ID not found or reason not available.', ephemeral: false });
+    }
 
-      if (result) {
-        interaction.reply({ content: `Ban ID ${banId} Reason: ${result.split('Reason:')[1]}`, ephemeral: false });
-      } else {
-        interaction.reply({ content: 'Ban ID not found or reason not available.', ephemeral: false });
-      }
     });
   } else if (commandName === 'reason') {
     // Command to add a reason to a specific ban ID
@@ -271,7 +265,7 @@ client.on('interactionCreate', async (interaction) => {
 
     try {
       const decryptedText = vigenereDecrypt(text, key);
-      interaction.reply({ content: 'Decrypted text (Vigenère): ' + decryptedText, ephemeral: true });
+      interaction.reply({ content: 'Decrypted text (Vigenère): ' + decryptedText, ephemeral: false });
     } catch (error) {
       console.error('Error decrypting with Vigenère cipher:', error);
       interaction.reply({ content: 'An error occurred while decrypting with Vigenère cipher.', ephemeral: true });
@@ -286,7 +280,7 @@ client.on('interactionCreate', async (interaction) => {
 
     try {
       const decryptedText = keywordDecrypt(text, keyword);
-      interaction.reply({ content: 'Decrypted text (Keyword): ' + decryptedText, ephemeral: true });
+      interaction.reply({ content: 'Decrypted text (Keyword): ' + decryptedText, ephemeral: false });
     } catch (error) {
       console.error('Error decrypting with Keyword cipher:', error);
       interaction.reply({ content: 'An error occurred while decrypting with Keyword cipher.', ephemeral: true });
