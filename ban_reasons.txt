@@ -1,2 +1,3 @@
 
 Ban ID: 2, Reason: breaking discord TOS
+Ban ID: 1, Reason: 1

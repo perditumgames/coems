@@ -271,7 +271,7 @@ client.on('interactionCreate', async (interaction) => {
 
     try {
       const decryptedText = vigenereDecrypt(text, key);
-      interaction.reply({ content: 'Decrypted text (Vigenère): ' + decryptedText, ephemeral: true });
+      interaction.reply({ content: 'Decrypted text (Vigenère): ' + decryptedText, ephemeral: false });
     } catch (error) {
       console.error('Error decrypting with Vigenère cipher:', error);
       interaction.reply({ content: 'An error occurred while decrypting with Vigenère cipher.', ephemeral: true });
@@ -286,7 +286,7 @@ client.on('interactionCreate', async (interaction) => {
 
     try {
       const decryptedText = keywordDecrypt(text, keyword);
-      interaction.reply({ content: 'Decrypted text (Keyword): ' + decryptedText, ephemeral: true });
+      interaction.reply({ content: 'Decrypted text (Keyword): ' + decryptedText, ephemeral: false });
     } catch (error) {
       console.error('Error decrypting with Keyword cipher:', error);
       interaction.reply({ content: 'An error occurred while decrypting with Keyword cipher.', ephemeral: true });
