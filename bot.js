@@ -196,21 +196,13 @@ client.on('interactionCreate', async (interaction) => {
       return interaction.reply({ content: 'Please provide a valid ban ID to lookup.', ephemeral: true });
     }
 
-    fs.readFile('ban_reasons.txt', 'utf8', (err, data) => {
-      if (err) {
-        console.error('Error reading ban reasons file:', err);
-        return interaction.reply({ content: 'An error occurred while looking up the ban reason.', ephemeral: true });
-      }
+    const ban = bans[banId];
 
-      const lines = data.split('\n');
-      const result = lines.find((line) => line.includes(`Ban ID: ${banId}`));
-
-      if (result) {
-        interaction.reply({ content: `Ban ID ${banId} Reason: ${result.split('Reason:')[1]}`, ephemeral: false });
-      } else {
-        interaction.reply({ content: 'Ban ID not found or reason not available.', ephemeral: false });
-      }
-    });
+    if (ban) {
+      interaction.reply({ content: `Ban ID ${banId} Reason: ${ban.reason}`, ephemeral: false });
+    } else {
+      interaction.reply({ content: 'Ban ID not found or reason not available.', ephemeral: false });
+    }
   } else if (commandName === 'reason') {
     // Command to add a reason to a specific ban ID
     const banId = options.getInteger('banid');
